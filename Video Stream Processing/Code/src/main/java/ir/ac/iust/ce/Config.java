@@ -5,7 +5,7 @@ public class Config {
     static int height = 480;
     static int fps = 24;
 
-    static String resources = "/home/divar/IdeaProjects/StreamProcessingProject/src/main/resources/";
+    static String resources = "src/main/resources/";
 
     static String videoPath = resources + "input.mp4";
     static String outputVideoPath = resources + "output.mp4";
