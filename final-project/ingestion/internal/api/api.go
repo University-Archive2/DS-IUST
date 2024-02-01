@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	data2 "ingestion/internal/data"
 	"io"
 	"net/http"
+	data3 "pkg/data"
 
 	"github.com/sirupsen/logrus"
 
@@ -39,7 +39,7 @@ func (a *IngestionAPI) ingestHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dataType data2.FinancialDataType
+	var dataType data3.FinancialDataType
 	if err = json.Unmarshal(body, &dataType); err != nil {
 		logrus.WithError(err).Error("Failed to decode data type")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -49,35 +49,35 @@ func (a *IngestionAPI) ingestHandler(w http.ResponseWriter, r *http.Request) {
 	var data any
 
 	switch dataType.Value {
-	case data2.StockDataType:
+	case data3.StockDataType:
 		data, err = a.handleStockData(body)
 		if err != nil {
 			logrus.WithError(err).Error("Failed to handle stock data")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	case data2.OrderBookDataType:
+	case data3.OrderBookDataType:
 		data, err = a.handleOrderBookData(body)
 		if err != nil {
 			logrus.WithError(err).Error("Failed to handle order book data")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	case data2.NewsSentimentDataType:
+	case data3.NewsSentimentDataType:
 		data, err = a.handleNewsSentimentData(body)
 		if err != nil {
 			logrus.WithError(err).Error("Failed to handle news sentiment data")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	case data2.MarketDataType:
+	case data3.MarketDataType:
 		data, err = a.handleMarketData(body)
 		if err != nil {
 			logrus.WithError(err).Error("Failed to handle market data")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	case data2.EconomicIndicatorDataType:
+	case data3.EconomicIndicatorDataType:
 		data, err = a.handleEconomicIndicatorData(body)
 		if err != nil {
 			logrus.WithError(err).Error("Failed to handle economic indicator data")
@@ -107,7 +107,7 @@ func (a *IngestionAPI) ingestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *IngestionAPI) handleStockData(body []byte) (any, error) {
-	var data data2.StockData
+	var data data3.StockData
 	if err := json.Unmarshal(body, &data); err != nil {
 		return nil, err
 	}

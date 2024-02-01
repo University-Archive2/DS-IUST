@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	data2 "ingestion/internal/data"
+	data2 "pkg/data"
 )
 
 func (a *IngestionAPI) handleOrderBookData(body []byte) (any, error) {

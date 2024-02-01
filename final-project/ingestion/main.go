@@ -2,25 +2,21 @@ package main
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"ingestion/internal/api"
 	"ingestion/internal/config"
-	"ingestion/internal/kafka"
 	"ingestion/internal/service"
-	"os"
+	"pkg"
+	"pkg/kafka"
+	"pkg/logger"
 )
 
 func main() {
-	logrus.SetFormatter(&logrus.TextFormatter{
-		DisableColors: true,
-		FullTimestamp: true,
-	})
+	logger.InitLogger()
 
-	user := os.Getenv("USER")
-	configs := config.LoadConfigs(user == "divar")
+	configs := config.LoadConfigs(pkg.IsLocalEnv())
 	fmt.Println(configs)
 
-	kafkaProducer := kafka.NewKafkaProducer("stock", configs.KafkaHosts, 2)
+	kafkaProducer := kafka.NewKafkaProducer(configs.KafkaHosts, 2)
 
 	ingestionService := service.NewIngestionService(kafkaProducer)
 

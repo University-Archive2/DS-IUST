@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"ingestion/pkg/broker"
+	"pkg/broker"
 )
 
 type IngestionService struct {
@@ -22,5 +22,10 @@ func (s *IngestionService) ProduceFinancialData(dataType string, data any) error
 		return err
 	}
 
-	return s.producer.Produce(context.Background(), dataType, bytesData)
+	message := &broker.Message{
+		Key:   dataType,
+		Value: bytesData,
+	}
+
+	return s.producer.Produce(context.Background(), message)
 }

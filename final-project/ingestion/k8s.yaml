@@ -13,8 +13,8 @@ spec:
         app: ingestion
     spec:
       containers:
-        - name: go-app
-          image: alinazariii/ds-ingestion:0.0.4
+        - name: ingestion
+          image: alinazariii/ds-ingestion:0.2.0
           ports:
             - containerPort: 8080
           envFrom:
