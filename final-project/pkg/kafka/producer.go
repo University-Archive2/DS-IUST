@@ -16,12 +16,10 @@ type kafkaProducer struct {
 	timeout time.Duration
 }
 
-func NewKafkaProducer(topic string, hosts []string, timeout int) broker.Producer {
+func NewKafkaProducer(hosts []string, timeout int) broker.Producer {
 	writer := &kafka.Writer{
-		Addr:                   kafka.TCP(hosts...),
-		Topic:                  topic,
-		AllowAutoTopicCreation: true,
-		Balancer:               &StockTypePartitionBalancer{},
+		Addr:     kafka.TCP(hosts...),
+		Balancer: &StockTypePartitionBalancer{},
 	}
 
 	return &kafkaProducer{
@@ -30,13 +28,14 @@ func NewKafkaProducer(topic string, hosts []string, timeout int) broker.Producer
 	}
 }
 
-func (p *kafkaProducer) Produce(ctx context.Context, key string, value []byte) error {
-	message := kafka.Message{
-		Key:   []byte(key),
-		Value: value,
+func (p *kafkaProducer) Produce(ctx context.Context, message *broker.Message) error {
+	m := kafka.Message{
+		Key:   []byte(message.Key),
+		Value: message.Value,
+		Topic: message.Key,
 	}
 
-	return p.produceWithRetry(ctx, message)
+	return p.produceWithRetry(ctx, m)
 }
 
 func (p *kafkaProducer) produceWithRetry(ctx context.Context, message kafka.Message) error {

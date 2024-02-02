@@ -1,41 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ingestion
+  name: signal
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ingestion
+      app: signal
   template:
     metadata:
       labels:
-        app: ingestion
+        app: signal
     spec:
       containers:
-        - name: go-app
-          image: alinazariii/ds-ingestion:0.1.0
-          ports:
-            - containerPort: 8080
+        - name: signal
+          image: alinazariii/ds-signal:0.1.0
           envFrom:
             - configMapRef:
-                name: ingestion
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ingestion
-spec:
-  selector:
-    app: ingestion
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
+                name: signal
 ---
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: ingestion
+  name: signal
 data:
   KAFKA_HOSTS: "kafka-controller-0.kafka-controller-headless:9092,kafka-controller-1.kafka-controller-headless:9092,kafka-controller-2.kafka-controller-headless:9092"
