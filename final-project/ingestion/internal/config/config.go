@@ -3,10 +3,12 @@ package config
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"pkg/kafka"
+	"strings"
 )
 
 type Config struct {
-	KafkaHosts []string `mapstructure:"kafka_hosts"`
+	Kafka kafka.KafkaConfig `mapstructure:"kafka"`
 }
 
 func LoadConfigs(isLocal bool) Config {
@@ -14,9 +16,15 @@ func LoadConfigs(isLocal bool) Config {
 		loadLocalConfigs()
 	}
 
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "__"))
+
 	viper.AutomaticEnv()
 
-	viper.SetDefault("kafka_hosts", "localhost:9092")
+	viper.SetDefault("kafka.hosts", "localhost:9092")
+	viper.SetDefault("kafka.consumer_group", "analyze")
+	viper.SetDefault("kafka.timeout", "2s")
+	viper.SetDefault("kafka.topic", "stock")
+	viper.SetDefault("kafka.partition", 0)
 
 	var data Config
 

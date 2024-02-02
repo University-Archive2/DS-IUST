@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"pkg/broker"
 	"pkg/data"
+	"time"
 )
 
 type AnalyzeService struct {
@@ -36,7 +37,7 @@ func (s *AnalyzeService) Start() {
 }
 
 func (s *AnalyzeService) processMessages(messagesChan chan *broker.Message) {
-	period := 3
+	windowSize := 3
 	values := make([]data.StockData, 0)
 
 	for message := range messagesChan {
@@ -53,53 +54,53 @@ func (s *AnalyzeService) processMessages(messagesChan chan *broker.Message) {
 
 		logrus.WithFields(logrus.Fields{
 			"stock_symbol": stockData.StockSymbol,
-			"timestamp":    stockData.Timestamp,
+			"timestamp":    time.Unix(int64(stockData.Timestamp), 0),
 		}).Info("received stock data")
 
 		values = append(values, stockData)
 
-		if len(values) != period {
+		if len(values) != windowSize {
 			continue
 		}
 
-		s.calculateIndicators(values, period)
+		s.calculateIndicators(values, windowSize)
 
-		values = make([]data.StockData, 0)
+		values = values[1:]
 	}
 }
 
-func (s *AnalyzeService) calculateIndicators(values []data.StockData, period int) {
-	ma := indicator.CalculateMovingAverage(values, period)
+func (s *AnalyzeService) calculateIndicators(values []data.StockData, windowSize int) {
+	ma := indicator.CalculateMovingAverage(values, windowSize)
 
 	err := s.stockAnalyzeRepository.Create(&repository.StockAnalysis{
 		Symbol:    values[0].StockSymbol,
 		Indicator: "moving_average",
 		Value:     ma,
-		Timestamp: values[period-1].Timestamp,
+		Timestamp: time.Unix(int64(values[windowSize-1].Timestamp), 0),
 	})
 	if err != nil {
 		logrus.WithError(err).Error("failed to save moving average")
 	}
 
-	ema := indicator.CalculateEMA(values, period)
+	ema := indicator.CalculateEMA(values, windowSize)
 
 	err = s.stockAnalyzeRepository.Create(&repository.StockAnalysis{
 		Symbol:    values[0].StockSymbol,
 		Indicator: "exponential_moving_average",
 		Value:     ema,
-		Timestamp: values[period-1].Timestamp,
+		Timestamp: time.Unix(int64(values[windowSize-1].Timestamp), 0),
 	})
 	if err != nil {
 		logrus.WithError(err).Error("failed to save exponential moving average")
 	}
 
-	rsi := indicator.CalculateRSI(values, period)
+	rsi := indicator.CalculateRSI(values, windowSize)
 
 	err = s.stockAnalyzeRepository.Create(&repository.StockAnalysis{
 		Symbol:    values[0].StockSymbol,
 		Indicator: "relative_strength_index",
 		Value:     rsi,
-		Timestamp: values[period-1].Timestamp,
+		Timestamp: time.Unix(int64(values[windowSize-1].Timestamp), 0),
 	})
 	if err != nil {
 		logrus.WithError(err).Error("failed to save relative strength index")

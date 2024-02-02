@@ -9,14 +9,14 @@ import (
 	"time"
 )
 
-const retries = 3
+const retries = 1
 
 type kafkaProducer struct {
 	writer  *kafka.Writer
 	timeout time.Duration
 }
 
-func NewKafkaProducer(hosts []string, timeout int) broker.Producer {
+func NewKafkaProducer(hosts []string, timeout time.Duration) broker.Producer {
 	writer := &kafka.Writer{
 		Addr:     kafka.TCP(hosts...),
 		Balancer: &StockTypePartitionBalancer{},
@@ -24,7 +24,7 @@ func NewKafkaProducer(hosts []string, timeout int) broker.Producer {
 
 	return &kafkaProducer{
 		writer:  writer,
-		timeout: time.Duration(timeout) * time.Second,
+		timeout: timeout,
 	}
 }
 
@@ -46,11 +46,11 @@ func (p *kafkaProducer) produceWithRetry(ctx context.Context, message kafka.Mess
 
 		err = p.writer.WriteMessages(ctx, message)
 		if err != nil {
+			logrus.WithError(err).Error("error in produce")
 			if errors.Is(err, kafka.LeaderNotAvailable) || errors.Is(err, context.DeadlineExceeded) {
 				time.Sleep(time.Millisecond * 250)
 				continue
 			}
-			logrus.WithError(err).Error("error in produce")
 			break
 		}
 	}

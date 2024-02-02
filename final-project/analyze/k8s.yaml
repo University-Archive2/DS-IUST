@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: analyze
-          image: alinazariii/ds-analyze:0.0.7
+          image: alinazariii/ds-analyze:0.3.0
           envFrom:
             - configMapRef:
                 name: analyze

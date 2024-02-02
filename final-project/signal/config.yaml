@@ -1,6 +1,4 @@
 kafka:
   hosts:
-    - "kafka-controller-0.kafka-controller-headless:9092"
-    - "kafka-controller-1.kafka-controller-headless:9092"
-    - "kafka-controller-2.kafka-controller-headless:9092"
+    - "localhost:9092"
   timeout: "2s"

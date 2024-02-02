@@ -16,7 +16,7 @@ func main() {
 	configs := config.LoadConfigs(pkg.IsLocalEnv())
 	fmt.Println(configs)
 
-	kafkaProducer := kafka.NewKafkaProducer(configs.KafkaHosts, 2)
+	kafkaProducer := kafka.NewKafkaProducer(configs.Kafka.Hosts, configs.Kafka.Timeout)
 
 	ingestionService := service.NewIngestionService(kafkaProducer)
 
