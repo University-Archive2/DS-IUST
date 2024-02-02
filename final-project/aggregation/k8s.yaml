@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aggregation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aggregation
+  template:
+    metadata:
+      labels:
+        app: aggregation
+    spec:
+      containers:
+        - name: analyze
+          image: alinazariii/ds-aggregation:0.0.1
+          envFrom:
+            - configMapRef:
+                name: aggregation
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: aggregation
+data:
+  KAFKA__HOSTS: "kafka:9092"
+  KAFKA__CONSUMER_GROUP: "aggregation"
+
+  POSTGRESQL__HOST: "data-postgresql"
+
+  REDIS__HOST: "redis-master"

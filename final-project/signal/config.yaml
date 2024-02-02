@@ -1,4 +1,0 @@
-kafka:
-  hosts:
-    - "localhost:9092"
-  timeout: "2s"

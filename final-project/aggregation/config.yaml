@@ -1,0 +1,14 @@
+kafka:
+  hosts:
+    - "localhost:9092"
+  topic: "stock"
+  consumer_group: "aggregation"
+  partition: 0
+  timeout: "1s"
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: ""
+  timeout: "1s"
