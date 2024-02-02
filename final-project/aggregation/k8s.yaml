@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: analyze
-          image: alinazariii/ds-aggregation:0.0.1
+          image: alinazariii/ds-aggregation:0.0.2
           envFrom:
             - configMapRef:
                 name: aggregation

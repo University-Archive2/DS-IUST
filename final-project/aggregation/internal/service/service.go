@@ -88,7 +88,7 @@ func (s *AggregationService) processMessages(messagesChan chan *broker.Message) 
 		go s.persistMiddleValues(stockData.StockSymbol, count, totalVolume, totalOpeningPrice, totalClosingPrice, highestPrice, lowestPrice)
 
 		if count%10 == 0 {
-			s.StoreAggregatedMetrics(stockData.StockSymbol, count, totalVolume, totalOpeningPrice, totalClosingPrice, highestPrice, lowestPrice)
+			s.StoreAggregatedMetrics(stockData, count, totalVolume, totalOpeningPrice, totalClosingPrice, highestPrice, lowestPrice)
 		}
 	}
 }
@@ -231,37 +231,43 @@ func (s *AggregationService) persistMiddleValues(stockSymbol string, count int, 
 	}
 }
 
-func (s *AggregationService) StoreAggregatedMetrics(stockSymbol string, count int, totalVolume float64, totalOpeningPrice float64, totalClosingPrice float64, highestPrice float64, lowestPrice float64) {
+func (s *AggregationService) StoreAggregatedMetrics(stockData data.StockData, count int, totalVolume float64, totalOpeningPrice float64, totalClosingPrice float64, highestPrice float64, lowestPrice float64) {
 	metrics := []*repository.AggregatedMetric{
 		{
-			Symbol: stockSymbol,
-			Metric: "total_volume",
-			Value:  totalVolume,
+			Symbol:    stockData.StockSymbol,
+			Metric:    "total_volume",
+			Value:     totalVolume,
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 		{
-			Symbol: stockSymbol,
-			Metric: "average_volume",
-			Value:  totalVolume / float64(count),
+			Symbol:    stockData.StockSymbol,
+			Metric:    "average_volume",
+			Value:     totalVolume / float64(count),
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 		{
-			Symbol: stockSymbol,
-			Metric: "average_opening_price",
-			Value:  totalOpeningPrice / float64(count),
+			Symbol:    stockData.StockSymbol,
+			Metric:    "average_opening_price",
+			Value:     totalOpeningPrice / float64(count),
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 		{
-			Symbol: stockSymbol,
-			Metric: "average_closing_price",
-			Value:  totalClosingPrice / float64(count),
+			Symbol:    stockData.StockSymbol,
+			Metric:    "average_closing_price",
+			Value:     totalClosingPrice / float64(count),
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 		{
-			Symbol: stockSymbol,
-			Metric: "highest_price",
-			Value:  highestPrice,
+			Symbol:    stockData.StockSymbol,
+			Metric:    "highest_price",
+			Value:     highestPrice,
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 		{
-			Symbol: stockSymbol,
-			Metric: "lowest_price",
-			Value:  lowestPrice,
+			Symbol:    stockData.StockSymbol,
+			Metric:    "lowest_price",
+			Value:     lowestPrice,
+			Timestamp: time.Unix(int64(stockData.Timestamp), 0),
 		},
 	}
 
