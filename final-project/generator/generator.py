@@ -15,7 +15,8 @@ p.cpu_affinity([0])  # Pin to the first core.
 stocks = ["AAPL", "GOOGL", "AMZN", "MSFT", "TSLA"]
 
 # API endpoint to send the generated data
-api_endpoint = "http://localhost:8080/ingest"
+# api_endpoint = "http://localhost:8080/ingest"
+api_endpoint = "http://192.168.49.2/ingest"
 
 
 def generate_data():

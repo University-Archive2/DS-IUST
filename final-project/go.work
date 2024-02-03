@@ -5,5 +5,4 @@ use (
 	./analyze
 	./ingestion
 	./pkg
-	./signal
 )
